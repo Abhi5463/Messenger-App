@@ -8,7 +8,7 @@ const User = ({ item }) => {
   const [requestSent, setRequestSent] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
   const [userFriends, setUserFriends] = useState([]);
-
+  console.log(item);
   useEffect(() => {
     const fetchFriendRequests = async () => {
       try {
@@ -50,7 +50,7 @@ const User = ({ item }) => {
     fetchUserFriends();
   }, []);
 
-  const sendFriendRequest = ({ senderId, recieverId }) => {
+  const sendFriendRequest = (senderId, recieverId) => {
     console.log("Request sent to:", recieverId, "from:", senderId);
     axios.post("http://192.168.1.7:8000/friend-request", 
     {
@@ -64,6 +64,8 @@ const User = ({ item }) => {
     })
   }
   console.log("requestSent: " + requestSent);
+  console.log("user ID is: " + userId);
+  console.log("item id is: " + item._id);
   return (
     <Pressable
       style={{ flexDirection: "row", alignItems: "center", marginVertical: 10 }}
@@ -122,7 +124,7 @@ const User = ({ item }) => {
             Add Friend
           </Text>
         </Pressable>
-      )}
+       )} 
     </Pressable>
   );
 };

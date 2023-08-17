@@ -20,10 +20,10 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     const user = {
-        name: "Abhishek",
-        email: "abhishek98793@yopmail1.com",
-        password: "123456789",
-        image: ""
+      name: name,
+      email: email,
+      password: password,
+      image: image,
     };
     // console.log(user, "user");
     // send a POST  request to the backend API to register the user
