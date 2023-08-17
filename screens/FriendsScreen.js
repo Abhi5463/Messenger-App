@@ -9,12 +9,11 @@ const FriendsScreen = () => {
  const [requests, setRequests] = useState([]);
  useEffect(()=>{
     fetchRequests();
-    console.log("Request")
  }, []);
 
  const fetchRequests = async() => {
     try {
-        const response = await axios.get(`http://192.168.1.2:8000/friend-request/${userId}`);
+        const response = await axios.get(`http://192.168.1.7:8000/friend-request/${userId}`);
         if(response.status === 200){
             const friendRequests = response.data.map((user)=>(
                 {

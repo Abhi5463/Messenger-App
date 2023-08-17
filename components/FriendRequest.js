@@ -9,7 +9,7 @@ const FriendRequest = ({ item, friendRequests, setFriendRequests }) => {
   const acceptRequest = async (friendRequestId) => {
     try {
       const response = await fetch(
-        "http://localhost:8000/friend-request/accept",
+        "http://192.168.1.7:8000/friend-request/accept",
         {
           method: "POST",
           headers: {
@@ -26,7 +26,7 @@ const FriendRequest = ({ item, friendRequests, setFriendRequests }) => {
         setFriendRequests(
           friendRequests.filter((request) => request._id !== friendRequestId)
         );
-        navigation.navigate("Chats");
+        navigation.navigate("Chat");
       }
     } catch (err) {
       console.log("error acceptin the friend request", err);

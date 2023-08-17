@@ -195,7 +195,7 @@ app.post("/friend-request/accept", async (req, res) => {
 });
 
 //endpoint to access all the friends of the logged in user!
-app.get("/accepted-friends/userId", async (req, res) => {
+app.get("/accepted-friends/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).populate(
@@ -252,10 +252,8 @@ app.post("/messages", upload.single("imageFile"), async (req, res) => {
 app.get("/user/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
-
     //fetch the user data from the user ID
     const recepientId = await User.findById(userId);
-
     res.json(recepientId);
   } catch (error) {
     console.log(error);
