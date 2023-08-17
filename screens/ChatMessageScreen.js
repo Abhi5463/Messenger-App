@@ -12,6 +12,35 @@ import { useRoute,useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import { Cloudinary } from 'cloudinary-react-native';
+
+
+const imageuploadHandler = async (img) => {
+  const base64Img = `data:image/jpg;base64,${img}`;
+  const apiUrl = 'https://api.cloudinary.com/v1_1/do82bf4q4/image/upload';
+  
+  const data = {
+    "file": base64Img,
+    "upload_preset": "rxu9mt0a",
+  };
+
+  try {
+    const response = await fetch(apiUrl, {
+      body: JSON.stringify(data),
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+    });
+
+    const responseData = await response.json();
+    console.log("data.secure_url", responseData.secure_url);
+    return responseData?.secure_url;
+  } catch (error) {
+    console.log("Error uploading image:", error);
+    return null; // or handle the error case as needed
+  }
+};
 
 
 const ChatMessageScreen = () => {
@@ -33,12 +62,15 @@ const ChatMessageScreen = () => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
+        base64: true,
       });
   
-      console.log(result);
+      // console.log("here",result.assets[0].base64);
   
       if (!result.canceled) {
-        handleSend("image", result.assets[0].uri);
+        const imageUri = await imageuploadHandler(result.assets[0].base64)
+        console.log("imageeUri from pickImage",imageUri);
+        await handleSend("image", imageUri);
       }
     };
 
@@ -86,44 +118,43 @@ const ChatMessageScreen = () => {
   }
 
   const handleSend = async (messageType, imageUri) => {
+    console.log("send", messageType, imageUri);
     try {
-    const formdata = new FormData();
-    formdata.append("senderId", userId);
-    formdata.append("recepientId", recepientId);
-    if(messageType === "image"){
-      formdata.append("messageType", messageType);
-      formdata.append("imageFile", {
-        uri: imageUri,
-        name: "image.jpg",
-        type:"image/jpeg"
+      const messageData = {
+        senderId: userId,
+        recepientId: recepientId,
+        messageType: messageType,
+        messageText: message, 
+        imageUrl: imageUri,
+      };
+  
+      // Send the message data to the server to save the message in the database
+      const response = await fetch('http://192.168.1.7:8000/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData),
       });
-    }else{
-      formdata.append("messageType", messageType);
-      formdata.append("messageText", message);
-    } 
-    const response = await fetch('http://192.168.1.7:8000/messages',{
-      method: "POST",
-      body: formdata
-    });
-
-    if(response.ok === true){
-      setMessage("");
-      setSelectedImage("");
-      fetchMessages();
-    }else{
-      console.log('Response status:', response.status);
-      console.log('Response body:', await response.text());
-    }
+  
+      if (response.ok === true) {
+        setMessage('');
+        setSelectedImage('');
+        fetchMessages();
+      } else {
+        console.log('Response status:', response.status);
+        console.log('Response body:', await response.text());
+      }
     } catch (error) {
-      console.log("error sending message", error);
+      console.log('Error sending message', error);
     }
-  }
-
+  };
+  
   useEffect(()=> {
    const fetchHeaderDetails = async () => {
     try {
       const response = await axios.get(`http://192.168.1.7:8000/user/${recepientId}`);
-      console.log(response, "response");
+      // console.log(response, "response");
       const data = await response.data;
       if(response.status == 200){
         setRecepientData(data);
@@ -136,7 +167,7 @@ const ChatMessageScreen = () => {
    }
    fetchHeaderDetails();
   },[])
-console.log(recepientData, "recepient details");
+// console.log(recepientData, "recepient details");
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -304,8 +335,8 @@ console.log(recepientData, "recepient details");
           //  const source = "/home/abhishek/Projects/Native-Projects/messenger-app/backend/files/1692125118431-837421688-image.jpg";
 
           const imageUrl = item.imageUrl;
-          const filename = imageUrl.split("/").pop();
-          const source = { uri: baseUrl + filename };
+          // const filename = imageUrl.split("/").pop();
+          const source = { uri: imageUrl  };
           console.log("source",source);
           // const source2 = source;
           // console.log("source2",typeof(source2));

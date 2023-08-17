@@ -229,15 +229,16 @@ const upload = multer({ storage: storage });
 //endpoint to post Messages and store it in the backend
 app.post("/messages", upload.single("imageFile"), async (req, res) => {
   try {
-    const { senderId, recepientId, messageType, messageText } = req.body;
-
+    const { senderId, recepientId, messageType, messageText, imageUrl } = req.body;
+    // const imageUrl = req.file ? req.file.path : null; // Get the imageUrl if an image is uploaded
+    console.log("req body: ", req.body);
     const newMessage = new Message({
       senderId,
       recepientId,
       messageType,
       message: messageText,
       timestamp: new Date(),
-      imageUrl: messageType === "image" ? req.file.path : null,
+      imageUrl
     });
 
     await newMessage.save();
