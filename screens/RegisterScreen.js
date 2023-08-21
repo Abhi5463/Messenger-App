@@ -128,7 +128,7 @@ const RegisterScreen = () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="Passowrd"
+              placeholder="Password"
             />
           </View>
 

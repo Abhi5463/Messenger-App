@@ -115,7 +115,7 @@ const LoginScreen =  () => {
                 width: 300,
               }}
               placeholderTextColor={"black"}
-              placeholder="Passowrd"
+              placeholder="Password"
             />
           </View>
 
